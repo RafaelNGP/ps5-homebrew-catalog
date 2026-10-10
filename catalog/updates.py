@@ -39,9 +39,13 @@ class Update:
 
 
 def newest_release(github: GitHub, owner: str, repo: str) -> dict | None:
-    """The newest published release (drafts skipped; pre-releases count)."""
+    """The newest published release (drafts skipped; pre-releases count).
+
+    A release whose tag has no digit (build-cache, build-inputs, nightly) holds build files, not
+    a version of the app, and is skipped as well.
+    """
     for release in github.releases(owner, repo):
-        if not release.get("draft"):
+        if not release.get("draft") and any(c.isdigit() for c in release.get("tag_name", "")):
             return release
     return None
 
