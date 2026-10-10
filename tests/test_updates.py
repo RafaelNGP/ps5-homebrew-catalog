@@ -89,6 +89,12 @@ class FindUpdateTests(unittest.TestCase):
                                     release("v0.5.0", [asset("example-0.5.0-PPSA01234.zip")])])
         self.assertEqual((update, reason), (None, "up to date"))
 
+    def test_skips_releases_that_are_not_versions(self):
+        update, reason = self.find([release("build-cache", [asset("ccache-clang18.tar")], prerelease=True),
+                                    release("v0.6.0", [asset("example-0.6.0-PPSA01234.zip")])])
+        self.assertEqual(reason, "")
+        self.assertEqual(update.data["version"], "0.6.0")
+
     def test_keeps_icon_when_missing_at_new_tag(self):
         update, _ = self.find([release("v0.6.0", [asset("example-0.6.0-PPSA01234.zip")])], icon_exists=False)
         self.assertEqual(update.data["icon_url"], OLD["icon_url"])
